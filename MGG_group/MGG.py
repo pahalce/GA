@@ -2,7 +2,7 @@ import random
 import copy
 
 import Tour as T
-from init import CITY_NUM, POPULATION, GENERATION_COMBINE, GENERATION_MAX, GENERATION_STEP, MUTATION, GROUP_N
+from init import CITY_NUM, POPULATION, GENERATION_COMBINE, GENERATION_MAX, GENERATION_STEP, MUTATION, GROUP_N, rand_cities, c_dist_list
 from Draw import draw_tour
 
 
@@ -192,42 +192,45 @@ def get_best_fitness(society):
     return str(round(best, 1))
 
 
-generation = 1
-society = []
-for g_i in range(GROUP_N):
-    society.append([])
-    c_tour(society[g_i], POPULATION)
-    draw_tour(society[g_i][0].gene, "before"+str(g_i))
-
-while generation <= int(GENERATION_COMBINE):
+def main():
+    rand_cities(CITY_NUM)
+    c_dist_list()
+    generation = 1
+    society = []
     for g_i in range(GROUP_N):
-        society_grow(society[g_i])
+        society.append([])
+        c_tour(society[g_i], POPULATION)
+        draw_tour(society[g_i][0].gene, "files/before"+str(g_i))
 
-    if generation % GENERATION_STEP == 0:
-        print("generation:", generation)
+    while generation <= int(GENERATION_COMBINE):
         for g_i in range(GROUP_N):
-            print("best tour"+str(g_i)+":", get_best_fitness(society[g_i]))
-    generation += 1
+            society_grow(society[g_i])
 
-for g_i in range(GROUP_N):
-    draw_tour(society[g_i][0].gene, "mid_society_" +
-              str(g_i), "fitness: "+get_best_fitness(society[g_i]))
+        if generation % GENERATION_STEP == 0:
+            print("generation:", generation)
+            for g_i in range(GROUP_N):
+                print("best tour"+str(g_i)+":", get_best_fitness(society[g_i]))
+        generation += 1
 
-society_c = []
-while (generation <= GENERATION_MAX):
-    new_society = society[0][:int(POPULATION/GROUP_N)].copy()
-    for g_i in range(1, GROUP_N):
-        society_c.append(society[g_i][:int(POPULATION/GROUP_N)].copy())
-        new_society += society_c[g_i-1].copy()
-    POPULATION = len(new_society)
-    society_grow(new_society)
-    if generation % GENERATION_STEP == 0 or generation == GENERATION_MAX:
-        print("generation:", generation)
-        print("best tour combine:", get_best_fitness(new_society))
-    generation += 1
-print("--finished--")
-draw_tour(new_society[0].gene, "final_result",
-          "fitness: "+get_best_fitness(new_society))
-for i in range(1, POPULATION, int(POPULATION/GROUP_N)):
-    draw_tour(new_society[i].gene, "final_result"+str(i),
-              "fitness: "+str(round(new_society[i].fitness, 1)))
+    for g_i in range(GROUP_N):
+        draw_tour(society[g_i][0].gene, "files/mid_society_" +
+                  str(g_i), "fitness: "+get_best_fitness(society[g_i]))
+
+    society_c = []
+    while (generation <= GENERATION_MAX):
+        new_society = society[0][:int(POPULATION/GROUP_N)].copy()
+        for g_i in range(1, GROUP_N):
+            society_c.append(society[g_i][:int(POPULATION/GROUP_N)].copy())
+            new_society += society_c[g_i-1].copy()
+        POPULATION = len(new_society)
+        society_grow(new_society)
+        if generation % GENERATION_STEP == 0 or generation == GENERATION_MAX:
+            print("generation:", generation)
+            print("best tour combine:", get_best_fitness(new_society))
+        generation += 1
+    print("--finished--")
+    draw_tour(new_society[0].gene, "files/final_result_best",
+              "fitness: "+get_best_fitness(new_society))
+    for i in range(1, POPULATION, int(POPULATION/GROUP_N)):
+        draw_tour(new_society[i].gene, "files/final_result"+str(i),
+                  "fitness: "+str(round(new_society[i].fitness, 1)))
