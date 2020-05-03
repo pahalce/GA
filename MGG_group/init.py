@@ -5,7 +5,7 @@ import math
 import random
 
 # TSP properties
-CITY_NUM = 20  # needs to be an even number
+CITY_NUM = 30  # needs to be an even number
 R = 200
 r = 100
 city_pos = []  # stores x,y position of cities
@@ -14,8 +14,8 @@ dist_list = []  # stores distance b/w all the cities
 
 # GA properties
 POPULATION = 500
-GENERATION_COMBINE = 20000  # when to combine groups
-GENERATION_MAX = 30000
+GENERATION_COMBINE = 40000  # when to combine groups
+GENERATION_MAX = 60000
 GENERATION_STEP = 100  # stats will be shown for every n steps
 MUTATION = 0.03
 GROUP_N = 5
@@ -54,7 +54,3 @@ def calc_dist(i, j):
     dist_x = city_pos[i][0] - city_pos[j][0]
     dist_y = city_pos[i][1] - city_pos[j][1]
     return round(math.sqrt(dist_x**2 + dist_y**2), 1)
-
-
-rand_cities(CITY_NUM)
-c_dist_list()
