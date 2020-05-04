@@ -4,13 +4,15 @@ R = 200
 r = 100
 
 # GA properties
-POPULATION = 5
-GENERATION_COMBINE = 30000  # when to combine groups
-GENERATION_MAX = 50000
-GENERATION_STEP = 1  # stats will be shown for every n steps
+POPULATION = 50
+GENERATION_COMBINE = 20000  # when to combine groups
+GENERATION_MAX = 30000
+# stats will be shown in console for every n steps(used only when MGG.py is executed)
+GENERATION_STEP = 100
 MUTATION = 0.03
-GROUP_N = 2
+GROUP_N = 5
 
 # draw properites
 draw_size = 600
 city_r = 10
+scale = 0.5
