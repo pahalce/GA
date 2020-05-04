@@ -7,7 +7,7 @@ class App(tk.Frame):
     center = c.draw_size/2
     button_w = 10
     button_h = 2
-    font_size = 18
+    font_size = 36
 
     def __init__(self, master, tsp):
         self.running = True
@@ -43,7 +43,7 @@ class App(tk.Frame):
         self.tsp = tsp
         self.window.append(tk.Toplevel())
         self.sub.append(
-            Sub(self.window[-1], tsp, society))
+            Sub(self, self.window[-1], tsp, society))
 
     def check_subs_closed(self):
         if Sub.running == False:
@@ -67,13 +67,15 @@ class App(tk.Frame):
                                     pos[0]+c.city_r, pos[1]+c.city_r, tag="city", fill="blue")
 
     def start(self):
-        Sub.running = True
+        self.draw_text(App.center, App.font_size, "Processing...", "state")
+        self.update()
         self.tsp.c_dist_list()
 
         ga = MGG.GA(self.tsp)
         ga.init_s_list()
         for s in ga.s_list:
             self.c_sub(self.tsp, s)
+        Sub.running = True
 
         while ga.generation <= c.GENERATION_COMBINE:
             if self.check_subs_closed():
@@ -83,6 +85,8 @@ class App(tk.Frame):
                 s.society_grow()
                 self.sub[s_i].draw_best_tour()
                 self.sub[s_i].draw_stats(ga.generation)
+
+            ga.show_stats(ga.s_list)
             self.update()
 
         print("--COMBINED SOCIETIES--")
@@ -97,9 +101,16 @@ class App(tk.Frame):
             window_combined.draw_best_tour()
             window_combined.draw_stats(ga.generation)
             self.update()
+        self.draw_text(App.center, App.font_size, "Done", "state")
         print("--finished--")
 
+    def draw_text(self, x, y, txt, tag):
+        self.canvas.delete(tag)
+        self.canvas.create_text(x, y, text=txt, tag=tag,
+                                anchor="center", font="arial "+str(App.font_size), fill="black")
+
     def destroy_subs(self):
+        self.canvas.delete("state")
         for sub in self.sub:
             sub.master.destroy()
         Sub.running = False
@@ -111,33 +122,40 @@ class App(tk.Frame):
 
 
 class Sub(tk.Frame):
-    center = c.draw_size/2
     button_w = 200
     button_h = 50
     count = 0
-    font_size = 18
+    font_size = int(App.font_size * c.scale)
+    draw_size = int(c.draw_size*c.scale)
+    center = draw_size/2
+    city_r = c.city_r * c.scale
+    city_pos = []
     running = False
 
-    def __init__(self, master, tsp, society):
+    def __init__(self, app, master, tsp, society):
         super().__init__(master)
+        self.app = app
+        Sub.city_pos.clear()
+        for pos in tsp.city_pos:
+            Sub.city_pos.append((pos[0]*c.scale, pos[1]*c.scale))
         self.pack()
         Sub.count += 1
         self.num = Sub.count
         self.s = society
-        master.geometry(str(c.draw_size)+"x"+str(c.draw_size))
+        master.geometry(str(Sub.draw_size)+"x"+str(Sub.draw_size))
         master.title("sub window:"+str(self.num))
         self.tsp = tsp
-        self.canvas = tk.Canvas(master, width=c.draw_size,
-                                height=c.draw_size, background="grey")
+        self.canvas = tk.Canvas(master, width=Sub.draw_size,
+                                height=Sub.draw_size, background="grey")
         self.canvas.place(x=0, y=0)
         self.draw_cities()
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def draw_cities(self):
         self.canvas.delete("city")
-        for pos in self.tsp.city_pos:
-            self.canvas.create_oval(pos[0]-c.city_r, pos[1]-c.city_r,
-                                    pos[0]+c.city_r, pos[1]+c.city_r, tag="city", fill="blue")
+        for pos in Sub.city_pos:
+            self.canvas.create_oval(pos[0]-Sub.city_r, pos[1]-Sub.city_r,
+                                    pos[0]+Sub.city_r, pos[1]+Sub.city_r, tag="city", fill="blue")
 
     def get_best_tour(self):
         return self.s.get_best_tour()
@@ -149,13 +167,13 @@ class Sub(tk.Frame):
         for i in range(c.CITY_NUM-1):
             city = gene[i]
             city_next = gene[i+1]
-            x_1 = self.tsp.city_pos[city][0]
-            y_1 = self.tsp.city_pos[city][1]
-            x_2 = self.tsp.city_pos[city_next][0]
-            y_2 = self.tsp.city_pos[city_next][1]
+            x_1 = Sub.city_pos[city][0]
+            y_1 = Sub.city_pos[city][1]
+            x_2 = Sub.city_pos[city_next][0]
+            y_2 = Sub.city_pos[city_next][1]
             self.canvas.create_line(x_1, y_1, x_2, y_2, width=2, tag="tour")
         self.canvas.create_line(
-            x_2, y_2, self.tsp.city_pos[gene[0]][0], self.tsp.city_pos[gene[0]][1], width=2, tag="tour", fill="red")
+            x_2, y_2, Sub.city_pos[gene[0]][0], Sub.city_pos[gene[0]][1], width=2, tag="tour", fill="red")
 
     def draw_text(self, x, y, txt, tag):
         self.canvas.delete(tag)
@@ -167,10 +185,11 @@ class Sub(tk.Frame):
         self.draw_text(
             Sub.center, Sub.font_size, "generation: "+str(generation), "generation")
         self.draw_text(
-            Sub.center, c.draw_size-Sub.font_size, "fitness: "+str(best_tour.fitness), "fitness")
+            Sub.center, Sub.draw_size-Sub.font_size, "fitness: "+str(best_tour.fitness), "fitness")
 
     def on_closing(self):
         Sub.running = False
+        self.app.destroy_subs()
 
 
 def main():

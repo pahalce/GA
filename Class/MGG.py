@@ -19,10 +19,10 @@ class TSP:
         step = math.pi*2/((num/2))
         for i in range(int(num/2)):
             deg = step*i
-            self.city_pos.append((round(center+c.r*math.cos(deg), 1),
-                                  round(center+c.r*math.sin(deg), 1)))
-            self.city_pos.append((round(center+c.R*math.cos(deg), 1),
-                                  round(center+c.R*math.sin(deg), 1)))
+            self.city_pos.append((round(center+c.r*math.cos(deg), 0),
+                                  round(center+c.r*math.sin(deg), 0)))
+            self.city_pos.append((round(center+c.R*math.cos(deg), 0),
+                                  round(center+c.R*math.sin(deg), 0)))
 
     def c_rand(self, num):
         self.city_pos.clear()
@@ -41,7 +41,7 @@ class TSP:
     def calc_dist(self, i, j):
         dist_x = self.city_pos[i][0] - self.city_pos[j][0]
         dist_y = self.city_pos[i][1] - self.city_pos[j][1]
-        return round(math.sqrt(dist_x**2 + dist_y**2), 1)
+        return math.sqrt(dist_x**2 + dist_y**2)
 
 
 class GA:
@@ -234,7 +234,7 @@ class Society:
         for i in range(num):
             sum_fit += tours[i].fitness
         for i in range(num):
-            add += round(tours[i].fitness/sum_fit, 5)
+            add += tours[i].fitness/sum_fit
             if r <= add:
                 return i
         return i
@@ -255,7 +255,7 @@ class Society:
         for tour in self.society:
             if best > tour.fitness:
                 best = tour.fitness
-        return str(round(best, 1))
+        return str(best)
 
     def get_best_tour(self):
         best = self.society[0].fitness
@@ -306,7 +306,7 @@ class Tour:
             index = self.tsp.city_pairs.index(
                 set([self.gene[i], self.gene[i+1]]))
             self.fitness += self.tsp.dist_list[index]
-        round(self.fitness, 1)
+        self.fitness
 
 
 def main():
