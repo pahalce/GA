@@ -31,8 +31,8 @@ class TSP:
                                   random.randint(c.city_r*2, c.draw_size-c.city_r*2)))
 
     def c_dist_list(self):
-        for i in range(int(c.CITY_NUM)):
-            for j in range(i+1, c.CITY_NUM):
+        for i in range(int(len(self.city_pos))):
+            for j in range(i+1, len(self.city_pos)):
                 if i == j:
                     continue
                 self.city_pairs.append(set([i, j]))
@@ -88,7 +88,7 @@ class Society:
         self.society = []
         if init_tour == True:
             for _ in range(c.POPULATION):
-                self.c_tour(c.CITY_NUM)
+                self.c_tour(len(self.tsp.city_pos))
 
     def c_tour(self, num, create_gene=True):
         for _ in range(num):
@@ -107,7 +107,7 @@ class Society:
         # inverse of parent-lists (in_par_a[2] :gets the index in par_a where city=2)
         in_par_a = []
         in_par_b = []
-        for i in range(c.CITY_NUM):
+        for i in range(len(self.tsp.city_pos)):
             in_par_a.append(par_a.index(i))
             in_par_b.append(par_b.index(i))
 
@@ -117,7 +117,7 @@ class Society:
         r_a = r_b = len(par_a)-1
         flag = 0
         l = 1
-        for i in range(1, c.CITY_NUM):
+        for i in range(1, len(self.tsp.city_pos)):
             l_a = i
             l_b = in_par_b[par_a[l_a]]
             if flag == 0:
@@ -243,11 +243,11 @@ class Society:
         r = random.random()
         if r > c.MUTATION:
             return
-        ii = random.randint(0, c.CITY_NUM-1)
-        jj = random.randint(0, c.CITY_NUM-1)
+        ii = random.randint(0, len(self.tsp.city_pos)-1)
+        jj = random.randint(0, len(self.tsp.city_pos)-1)
 
         while (ii == jj):
-            jj = random.randint(0, c.CITY_NUM-1)
+            jj = random.randint(0, len(self.tsp.city_pos)-1)
         tour.gene[ii], tour.gene[jj] = tour.gene[jj], tour.gene[ii]
 
     def get_best_fitness(self):
@@ -283,11 +283,9 @@ class Tour:
         return self.fitness < other.fitness
 
     def c_rand_gene(self):
-        r = random.randint(0, c.CITY_NUM-1)
-        for _ in range(c.CITY_NUM):
-            while(r in self.gene):
-                r = random.randint(0, c.CITY_NUM-1)
-            self.gene.append(r)
+        for i in range(len(self.tsp.city_pos)):
+            self.gene.append(i)
+            random.shuffle(self.gene)
         self.calc_fitness()
 
     def set_gene(self, gene):
@@ -302,11 +300,13 @@ class Tour:
 
     def calc_fitness(self):
         self.fitness = 0
-        for i in range(c.CITY_NUM-1):
+        for i in range(len(self.tsp.city_pos)-1):
             index = self.tsp.city_pairs.index(
                 set([self.gene[i], self.gene[i+1]]))
             self.fitness += self.tsp.dist_list[index]
-        self.fitness
+        self.fitness += self.tsp.dist_list[self.tsp.city_pairs.index(
+            set([self.gene[0], self.gene[-1]]))]
+        return self.fitness
 
 
 def main():
