@@ -4,7 +4,7 @@ R = 200
 r = 100
 
 # GA properties
-POPULATION = 50
+POPULATION = 500
 GENERATION_COMBINE = 20000  # when to combine groups
 GENERATION_MAX = 30000
 # stats will be shown in console for every n steps(used only when MGG.py is executed)
