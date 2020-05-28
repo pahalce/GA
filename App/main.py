@@ -168,9 +168,6 @@ class App(tk.Frame):
             else:
                 return -1
 
-    def motion(self, event):
-        print(event.x, event.y)
-
     def start(self):
         self.draw_text(App.center, App.font_size, "Processing...", "state")
         self.update()
@@ -193,10 +190,8 @@ class App(tk.Frame):
                 self.sub[s_i].draw_best_tour()
                 self.sub[s_i].draw_stats(ga.generation)
 
-            ga.show_stats(ga.s_list)
             self.update()
 
-        print("--COMBINED SOCIETIES--")
         ga.combine_society()
         self.c_sub(self.tsp, ga.s_combined)
         window_combined = self.sub[-1]
@@ -209,7 +204,6 @@ class App(tk.Frame):
             window_combined.draw_stats(ga.generation)
             self.update()
         self.draw_text(App.center, App.font_size, "Done", "state")
-        print("--finished--")
 
     def destroy_subs(self):
         if App.running == True:
