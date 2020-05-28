@@ -6,7 +6,7 @@ This is a program to solve TSP with GA
 <br>Run MGG.py to start calculation 
 <br>※reportlab is required for this(see installation)
 
--Class/
+-App/
 <br>opens a GUI App created with tkinter
 <br>Run main.py to open GUI
 
@@ -16,5 +16,5 @@ This is a program to solve TSP with GA
 # Installation for MGG/
 > $ pip install -r requirements.txt
 
-# Installation for Class/
-nothing except python3
+# Installation for App/
+no modules needed
