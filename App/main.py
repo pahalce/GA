@@ -11,7 +11,7 @@ class App(tk.Frame):
     font_size = 36
     running = True
     mode = "Auto"
-    w = 800
+    w = 780
     h = 600
 
     def __init__(self, master, tsp):
@@ -32,7 +32,7 @@ class App(tk.Frame):
 
         # frame1
         self.f_buttons = tk.Frame(master)
-        self.f_buttons.place(x=c.draw_size, y=0, width=App.w -
+        self.f_buttons.place(x=c.draw_size+10, y=10, width=App.w -
                              c.draw_size, height=App.h-App.button_h*2)
         self.b_rand = tk.Button(
             self.f_buttons, text="random", command=self.city_rand, width=App.button_w, height=App.button_h)
@@ -41,7 +41,7 @@ class App(tk.Frame):
             self.f_buttons, text="circualr", command=self.city_circular, width=App.button_w, height=App.button_h)
         self.b_circular.grid(column=1, row=0)
         self.b_start = tk.Button(
-            self.f_buttons, text="start", command=self.start, width=App.button_w, height=App.button_h)
+            self.f_buttons, text="START", command=self.start, width=App.button_w, height=App.button_h)
         self.b_start.grid(column=0, row=2)
         self.b_place_city = tk.Button(
             self.f_buttons, text="place city", width=App.button_w, height=App.button_h)
